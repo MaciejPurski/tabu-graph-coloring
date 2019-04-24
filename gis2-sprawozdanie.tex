@@ -1,0 +1,112 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[polish]{babel}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage[T1]{fontenc}
+\setlength{\parindent}{0.5cm}
+\usepackage{url}
+\usepackage{hyperref}
+\usepackage{breakurl}
+
+
+\author{Jakub Mazur, Maciej Purski}
+\title{Kolorowanie grafów za pomocą metod heurystycznych (SK16) - GIS sprawozdanie 2}
+
+
+
+
+
+\begin{document}
+\maketitle
+
+\section{Temat projektu}
+
+\indent
+Projekt ma na celu implementację algorytmu rozwiązującego problem kolorowania grafu.
+Przez kolorowanie rozumiemy podział zbioru wierzchołków $V$ na $k$ rozłącznych klas $C_k$ w taki
+sposób, że jeśli dowolne dwa wierzchołki $u$ i $v$ należą do jednej klasy $C_k$ , to wierzchołki te nie
+są połączone krawędzią.
+
+Celem algorytmu będzie wyznaczenie takiego podziału na klasy, by liczba $k$ była jak
+najmniejsza oraz, by nie występowały konflikty tj. nie można było znaleźć dwóch wierzchołków
+połączonych krawędzią, które byłyby w jednej klasie.
+Do rozwiązania problemu zostanie wykorzystana metoda heurystyczna \textbf{przeszukiwania z tabu}.
+
+\section{Algorytm}
+
+\textbf{Przeszukiwanie z tabu} jest heurystyczną metodą służącą do rozwiązywanie problemów optymalizacyjnych. Opiera się na przeszukiwaniu lokalnego sąsiedztwa danego rozwiązania. Tego typu metody silną tendencję do zatrzymywania się w optimum lokalnym. Algorytm przeszukiwania z tabu zakłada przechowywanie pewnego zbioru ostatnio odwiedzonych rozwiązań, tak aby przeszukiwanie nie \textit{utknęło} w optimum lokalnym.
+
+Algorytm może być używany do różnego typu problemów optymalizacyjnych. Jego postać ogólna została przedstawiona w \cite{alhe-tabu}. Dla zastosowania algorytmu do rozwiązania problemu kolorowania grafu, należy uszczegółowić jego poszczególne elementy, co jest tematem kolejnych podrozdziałów.
+
+\subsection{Reprezentacja rozwiązania}
+\textit{Rozwiązaniem} będziemy nazywali podział zbioru wierzchołków \textit{V} na \textit{k} niepustych podzbiorów, które można interpretować jako \textit{klasy} lub \textit{kolory}.
+
+\subsection{Warunki początkowe}
+Początkowa liczba kolorów $k$ będzie stanowiła parametr algorytmu. Wierzchołki zostaną pokolorowane w sposób losowy z gwarancją, że każdy z $k$ kolorów zostanie użyty dokładnie raz. Takie początkowe kolorowanie nie musi być wcale kolorowaniem poprawnym.
+
+
+\subsection{Sąsiedztwo}
+Zgodnie z \cite{coloring} \textbf{sąsiednim} rozwiązaniem $y\in N(x)$ do rozwiązania $x$, nazywamy takie rozwiązanie \textit{y}, które można uzyskać poprzez zmianę przynależności jednego z wierzchołków rozwiązania \textit{x}. Generacja jednego sąsiada polega na wylosowaniu jednej z niepustych klas $C_i$, następnie wylosowaniu wierzchołka $v\in C_i$ oraz liczby $j\in\langle1,k+1\rangle$, gdzie $k$ to liczba aktualnie użytych kolorów (klas). Następnie wierzchołek $v$ jest kolorowany na kolor $j$. Jeżeli wylosowano tę samą klasę, do której należy wierzchołek, losowanie jest powtarzane.
+
+W każdym kroku generowane jest $g$ sąsiadów \textit{punktu roboczego}\footnote{tj. aktualnie przetwarzanego}, gdzie $g$ stanowi parametr algorytmu. Spośród zbioru sąsiadów wybierany jest najlepszy element względem funkcji kosztu, który nie należy do listy tabu. Będzie on nowym punktem roboczym.
+
+\subsection{Lista tabu}
+Lista tabu przechowuje rozwiązania już odwiedzone, które były wcześniej punktem roboczym. Mieści ona $s$ elementów, gdzie $s$ stanowi parametr algorytmu.
+Jeżeli lista się zapełni, należy usunąć jeden z elementów. Metoda wyboru elementu, który ma zostać usunięty z listy będzie parametrem algorytmu. Dopuszczalne są metody:
+\begin{itemize}
+
+\item \textbf{Dostęp losowy} \\
+Usuwany jest losowy element z kolejki.
+\item \textbf{Kolejka FIFO} \\
+Usuwany jest element, który był w kolejce przez największą liczbę iteracji.
+\item \textbf{Kolejka priorytetowa} \\
+Usuwany jest element \textbf{najlepszy} względem funkcji kosztu.
+
+\end{itemize}
+
+\subsection{Funkcja kosztu}
+Aby możliwe było porównywanie poszczególnych rozwiązań, należy zdefiniować funkcję kosztu, która ma być zminimalizowana przez algorytm przeszukiwania z tabu. Pochodzi ona z artykułu \cite{coloring}. Ma ona postać:
+
+\begin{equation}
+cost(x) = - \sum_{i=1}^{k}|C_i|^2 + \sum_{i=1}^{k} 2*|C_i|*|E_i|
+\end{equation}
+
+gdzie $C_i$ oznacza $i$-tą klasę kolorowania, natomiast $E_i$ oznacza zbiór konfliktujących krawędzi w tej klasie. Pierwszy człon tej funkcji (pierwsza suma) odpowiada za minimalizację liczby klas poprzez \textit{premiowanie} jak najbardziej licznych klas. Drugi człon zas odpowiada za minimalizację liczby konfliktujących krawędzi.
+
+
+Jedną z głównych obserwacji odnośnie tej funkcji, przedstawionych we wspomnianym artykule, jest to, że jej
+minima lokalne odpowiadają podziałom bez konfliktów. Należy zauważyć, że liczba $k$ zawarta we
+wzorze nie zakłada z góry ilości użytych kolorów. Minimalizacja liczby użytych kolorów będzie niejako
+„efektem ubocznym” minimalizacji wartości funkcji celu.
+
+
+\subsection{Kryterium stopu}
+Algorytm nie ma naturalnego kryterium stopu. Jedną z możliwości, na którą zdecydowaliśmy się w naszej implementacji jest zatrzymanie algorytmu po zadanej liczbie iteracji $t$, która jest parametrem agorytmu.
+
+\subsection{Parametry}
+Reasumując, algorytm będzie przyjmował następujące parametry:
+\begin{itemize}
+\item Początkowa liczba kolorów
+\item Liczba iteracji
+\item Rozmiar sąsiedztwa
+\item Rozmiar listy tabu
+\item Metoda zarządzania listą tabu
+\end{itemize}
+
+\section{Ewaluacja rozwiązania}
+
+\section{Implementacja}
+Algorytm zostanie zaimplementowany w języku C++. Będzie on odczytywał graf w formie tekstowej ze standardowego wejścia i wypisywał rozwiązanie na standardowe wyjście. Możliwe będzie wypisywanie historii wartości funkcji kosztu aktualnego punktu roboczego w celu zbadania jej zmienności w ciągu kolejnych iteracji algorytmu oraz wypisanie najlepszego znalezionego rozwiązania.
+
+Do automatyzacji procesu ewaluacji rozwiązania posłuży skrypt w języku Python, który będzie powtarzał eksperymenty odpowiednią liczbę razy oraz rysował wykresy obrazujące zmianę wartości funkcji kosztu.
+
+\subsection{Użyte struktury danych}
+\subsubsection{Reprezentacja grafu}
+
+
+\bibliography{sources}
+\nocite{*}
+\bibliographystyle{plain}
+
+\end{document}
