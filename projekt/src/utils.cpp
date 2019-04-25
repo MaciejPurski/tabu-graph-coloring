@@ -70,3 +70,21 @@ ArgList validateArguments(ArgMap &argMap)
 
     return argList;
 }
+
+Graph graphFromStream(std::istream &istr)
+{
+    int n, q;
+
+    istr >> n >> q;
+
+    Graph g(n);
+
+    for (int i = 0; i < q; i++) {
+        int s, t;
+
+        istr >> s >> t;
+        boost::add_edge(s, t, g);
+    }
+
+    return g;
+}

@@ -1,5 +1,6 @@
 #include "utils.h"
 
+
 int main(int argc, char *argv[])
 {
     ArgMap args = processArguments(argc, argv);
@@ -15,6 +16,8 @@ int main(int argc, char *argv[])
     } catch (std::exception &e) {
         std::cout << help << std::endl;
     }
+
+
 
     return 0;
 }

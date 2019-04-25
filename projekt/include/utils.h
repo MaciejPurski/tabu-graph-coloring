@@ -4,6 +4,9 @@
 #include <iostream>
 #include <unordered_map>
 #include <string>
+#include <boost/graph/adjacency_matrix.hpp>
+
+typedef boost::adjacency_matrix<boost::undirectedS> Graph;
 
 typedef std::unordered_map<std::string, std::string> ArgMap;
 
@@ -15,6 +18,7 @@ struct ArgList {
 
 ArgMap processArguments(int nArgs, char **args);
 ArgList validateArguments(ArgMap &argMap);
+Graph graphFromStream(std::istream &istr);
 
 static const std::string help = "Following arguments are obligatory:\n"
                                 "\t-c, --color\n\t\tNumber of initial colors (positive integer)\n\n"
