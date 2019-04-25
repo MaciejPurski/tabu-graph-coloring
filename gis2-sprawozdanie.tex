@@ -14,9 +14,6 @@
 \title{Kolorowanie grafów za pomocą metod heurystycznych (SK16) - GIS sprawozdanie 2}
 
 
-
-
-
 \begin{document}
 \maketitle
 
@@ -43,7 +40,7 @@ Algorytm może być używany do różnego typu problemów optymalizacyjnych. Jeg
 \textit{Rozwiązaniem} będziemy nazywali podział zbioru wierzchołków \textit{V} na \textit{k} niepustych podzbiorów, które można interpretować jako \textit{klasy} lub \textit{kolory}.
 
 \subsection{Warunki początkowe}
-Początkowa liczba kolorów $k$ będzie stanowiła parametr algorytmu. Wierzchołki zostaną pokolorowane w sposób losowy z gwarancją, że każdy z $k$ kolorów zostanie użyty dokładnie raz. Takie początkowe kolorowanie nie musi być wcale kolorowaniem poprawnym.
+Początkowa liczba kolorów $k$ będzie stanowiła parametr algorytmu. Wierzchołki zostaną pokolorowane w sposób losowy z gwarancją, że każdy z $k$ kolorów zostanie użyty co najmniej raz - czyli innymi słowy zbiór wierzchołków grafu zostanie podzielony na $k$ niepustych podzbiorów. Takie początkowe kolorowanie nie musi być wcale kolorowaniem poprawnym.
 
 
 \subsection{Sąsiedztwo}
@@ -52,24 +49,13 @@ Zgodnie z \cite{coloring} \textbf{sąsiednim} rozwiązaniem $y\in N(x)$ do rozwi
 W każdym kroku generowane jest $g$ sąsiadów \textit{punktu roboczego}\footnote{tj. aktualnie przetwarzanego}, gdzie $g$ stanowi parametr algorytmu. Spośród zbioru sąsiadów wybierany jest najlepszy element względem funkcji kosztu, który nie należy do listy tabu. Będzie on nowym punktem roboczym.
 
 \subsection{Lista tabu}
-Lista tabu przechowuje rozwiązania już odwiedzone, które były wcześniej punktem roboczym. Mieści ona $s$ elementów, gdzie $s$ stanowi parametr algorytmu.
-Jeżeli lista się zapełni, należy usunąć jeden z elementów. Metoda wyboru elementu, który ma zostać usunięty z listy będzie parametrem algorytmu. Dopuszczalne są metody:
-\begin{itemize}
-
-\item \textbf{Dostęp losowy} \\
-Usuwany jest losowy element z kolejki.
-\item \textbf{Kolejka FIFO} \\
-Usuwany jest element, który był w kolejce przez największą liczbę iteracji.
-\item \textbf{Kolejka priorytetowa} \\
-Usuwany jest element \textbf{najlepszy} względem funkcji kosztu.
-
-\end{itemize}
+W naszym projekcie skorzystamy z metody zarządzania oraz reprezantacji listy tabu przedstawionej w artykule \cite{Hertz1987}. Lista tabu zostanie zaimplementowana jako kolejka FIFO o rozmiarze $n$ zadanym jako parametr algorytmu. Będzie ona przechowywała zakazane \textit{ruchy}. \textit{Ruchem} nazywamy zmianę wierzchołka \textit{v} z koloru \textit{i} na kolor \textit{j}. W każdej iteracji algorytmu wybierany jest najlepszy ruch (pod względem wartości funkcji celu), który nie znajduje się na liście tabu. Stworzy on nowy punkt roboczy. Na listę trafi natomiast ruch \textit{odwrotny} do wykonanego, a zatem będzie to para składająca się z wierzchołka \textit{v} oraz koloru \textit{i}, będącego \textit{starym} kolorem. Kiedy lista tabu się zapełni, zostanie z niej usunięty ostatni element.
 
 \subsection{Funkcja kosztu}
 Aby możliwe było porównywanie poszczególnych rozwiązań, należy zdefiniować funkcję kosztu, która ma być zminimalizowana przez algorytm przeszukiwania z tabu. Pochodzi ona z artykułu \cite{coloring}. Ma ona postać:
 
 \begin{equation}
-cost(x) = - \sum_{i=1}^{k}|C_i|^2 + \sum_{i=1}^{k} 2*|C_i|*|E_i|
+cost(x) = - \sum_{i=1}^{k}|C_i|^2 + \sum_{i=1}^{k} 2\cdot|C_i|\cdot|E_i|
 \end{equation}
 
 gdzie $C_i$ oznacza $i$-tą klasę kolorowania, natomiast $E_i$ oznacza zbiór konfliktujących krawędzi w tej klasie. Pierwszy człon tej funkcji (pierwsza suma) odpowiada za minimalizację liczby klas poprzez \textit{premiowanie} jak najbardziej licznych klas. Drugi człon zas odpowiada za minimalizację liczby konfliktujących krawędzi.
@@ -91,10 +77,19 @@ Reasumując, algorytm będzie przyjmował następujące parametry:
 \item Liczba iteracji
 \item Rozmiar sąsiedztwa
 \item Rozmiar listy tabu
-\item Metoda zarządzania listą tabu
 \end{itemize}
 
-\section{Ewaluacja rozwiązania}
+\section{Badanie rozwiązania}
+\subsection{Dobór parametrów}
+Przed rozpoczęciem właściwych eksperymentów i oceny efektywności rozwiązania, konieczne jest określenie optymalnych wartości parametrów tj. przede wszystkim długości listy tabu oraz rozmiaru sąsiedztwa. Parametry te zostaną ustalone doświadczalnie – algorytm zostanie uruchomiony dla kilku standardowych przypadków grafów, np. grafu losowego $G_{n,p}$\footnote{Jest to graf losowy, generowany według modelu Erdősa–Rényi \cite{erdos59a}, gdzie $n$ oznacza ilość wierzchołków, natomiast $p$ oznacza prawdopodobieństwo, że dowolna z możliwych krawędzi zostanie włączona do grafu.} z różnymi wartościami parametrów. Pozwoli to ustalić, dla jakich wartości parametrów algorytm działa efektywnie.
+
+\subsection{Optymalizacja funkcji kosztu}
+Ważnym elementem oceny rozwiązania jest zbadanie, jak zmienia się wartość funkcji kosztu wraz z kolejnyi iteracjami. Aby można było zbadać jej zmienność w ciągu kolejnych iteracji, program będzie logował wartości funkcji celu w kolejnych iteracjach. Dane te zostaną zebrane w formie wykresów. Pozwoli to sprawdzić, czy wartość funkcji zbiega do minimum, a także, ile iteracji jest do tego potrzebne.
+
+\subsection{Ewaluacja rozwiązania}
+Najważniejszym kryterium ewaluacji rozwiązania dla konkretnego przypadku grafu \textit{G} będzie uzyskana liczba chromatyczna \textit{k}. Aby można było w sposób miarodajny określić efektywność implementacji, należy przetestować algorytm na wielu różnorodnych przypadkach grafów. W tym celu zostaną wykorzystane standardowe grafy wykorzystywane w wielu artykułach traktujących o tematyce kolorowania grafów. Doskonały przegląd tych grafów, a także wyników uzyskanych przez najlepsze algorytmy można znaleźć w \cite{article}.
+
+Dla potrzeb ewaluacji rozwiązania algorytm zostanie uruchomiony na przypadkach grafów opisanych we wspomnianym artykule. Uzyskana liczba chromatyczna oraz czas działania i liczba iteracji programu zostaną porównane z wynikami przedstawionymi w artykule.
 
 \section{Implementacja}
 Algorytm zostanie zaimplementowany w języku C++. Będzie on odczytywał graf w formie tekstowej ze standardowego wejścia i wypisywał rozwiązanie na standardowe wyjście. Możliwe będzie wypisywanie historii wartości funkcji kosztu aktualnego punktu roboczego w celu zbadania jej zmienności w ciągu kolejnych iteracji algorytmu oraz wypisanie najlepszego znalezionego rozwiązania.

@@ -3,17 +3,6 @@
 #include <algorithm>
 #include <sstream>
 
-TabuMethod stringToTabuMethod(const std::string &str)
-{
-    if (str == "random")
-        return TabuMethod::RAND;
-    else if (str == "fifo")
-        return TabuMethod::RAND;
-    else if (str == "priority")
-        return TabuMethod::PRIORITY;
-    else return TabuMethod::UNKNOWN;
-}
-
 ArgMap processArguments(int nArgs, char **args)
 {
     ArgMap result;
@@ -67,22 +56,8 @@ ArgList validateArguments(ArgMap &argMap)
     err |= checkIntegerArgument(argMap, argList.nIterations, "--iterations", "-i");
     err |= checkIntegerArgument(argMap, argList.tabuSize, "--tabu", "-t");
 
-    if (argMap.find("-m") != argMap.end()) {
-        argList.tabuMethod = stringToTabuMethod(argMap["-m"]);
-    } else if (argMap.find("--method") != argMap.end()) {
-        argList.tabuMethod = stringToTabuMethod(argMap["--method"]);
-    } else {
-        std::cerr << "Can't find --method argument\n";
-        err = true;
-    }
-
     if (err)
         throw std::runtime_error("Error parsing arguments");
-
-    if (argList.tabuMethod == TabuMethod::UNKNOWN) {
-        std::cerr << "Unkown value of method argument\n";
-        err = true;
-    }
 
     if (argList.nColors < 2) {
         std::cerr << "Color value must be at least 2\n";

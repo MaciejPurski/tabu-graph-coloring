@@ -16,8 +16,5 @@ int main(int argc, char *argv[])
         std::cout << help << std::endl;
     }
 
-
-
-
     return 0;
 }
