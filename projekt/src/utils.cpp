@@ -55,6 +55,7 @@ ArgList validateArguments(ArgMap &argMap)
     err |= checkIntegerArgument(argMap, argList.nColors, "--color", "-c");
     err |= checkIntegerArgument(argMap, argList.nIterations, "--iterations", "-i");
     err |= checkIntegerArgument(argMap, argList.tabuSize, "--tabu", "-t");
+    err |= checkIntegerArgument(argMap, argList.nNeighbours, "--neighbours", "-n");
 
     if (err)
         throw std::runtime_error("Error parsing arguments");
@@ -73,18 +74,59 @@ ArgList validateArguments(ArgMap &argMap)
 
 Graph graphFromStream(std::istream &istr)
 {
-    int n, q;
+    std::string line;
+    int n = -1, q = -1;
+    std::vector<std::pair<int, int>> edges;
 
-    istr >> n >> q;
+    while (std::getline(istr, line)) {
+        if (line.front() == 'c')
+            continue;
+
+        if (line.front() == 'p') {
+            std::stringstream ss(line.substr(2));
+
+            std::string w;
+            ss >> w;
+            if (w != "edge")
+                throw std::runtime_error("Parse error: expected \"edge\" word");
+
+            ss >> n;
+            if (ss.fail())
+                throw std::runtime_error("Parse error: expected integer number of vertices");
+
+            ss >> q;
+            if (ss.fail())
+                throw std::runtime_error("Parse error: expected integer number of vertices");
+
+
+        } else if (line.front() == 'e') {
+            std::stringstream ss(line.substr(2));
+            int s, t;
+
+            ss >> s;
+            if (ss.fail())
+                throw std::runtime_error("Parse error: expected integer source edge");
+
+            ss >> t;
+            if (ss.fail())
+                throw std::runtime_error("Parse error: expected integer destination edge");
+
+            edges.emplace_back(s, t);
+        }
+    }
+
+    if (n == -1 || q == -1) {
+        throw std::runtime_error("Parse error: unkown graph size");
+    }
+
+    if (edges.size() != q) {
+        throw std::runtime_error("Parse error: wrong number of edges");
+    }
 
     Graph g(n);
 
-    for (int i = 0; i < q; i++) {
-        int s, t;
-
-        istr >> s >> t;
-        boost::add_edge(s, t, g);
-    }
+    for (auto p : edges)
+        boost::add_edge(p.first - 1, p.second - 1, g);    
 
     return g;
 }

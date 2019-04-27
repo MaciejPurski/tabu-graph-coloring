@@ -14,6 +14,7 @@ struct ArgList {
     unsigned int nColors;
     unsigned int nIterations;
     unsigned int tabuSize;
+    unsigned int nNeighbours;
 };
 
 ArgMap processArguments(int nArgs, char **args);

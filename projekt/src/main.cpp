@@ -1,4 +1,5 @@
 #include "utils.h"
+#include "tabu.h"
 
 
 int main(int argc, char *argv[])
@@ -15,8 +16,14 @@ int main(int argc, char *argv[])
         argList = validateArguments(args);
     } catch (std::exception &e) {
         std::cout << help << std::endl;
+        return -1;
     }
 
+    Graph g = graphFromStream(std::cin);
+
+    TabuSearch t(argList.nIterations, argList.tabuSize, argList.nColors, argList.nNeighbours, g);
+
+    t.optimize();
 
 
     return 0;

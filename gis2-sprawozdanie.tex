@@ -3,11 +3,14 @@
 \usepackage[polish]{babel}
 \usepackage{amsmath}
 \usepackage{amsfonts}
+\usepackage{times}
 \usepackage[T1]{fontenc}
 \setlength{\parindent}{0.5cm}
 \usepackage{url}
 \usepackage{hyperref}
 \usepackage{breakurl}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
 
 
 \author{Jakub Mazur, Maciej Purski}
@@ -32,7 +35,7 @@ Do rozwiązania problemu zostanie wykorzystana metoda heurystyczna \textbf{przes
 
 \section{Algorytm}
 
-\textbf{Przeszukiwanie z tabu} jest heurystyczną metodą służącą do rozwiązywanie problemów optymalizacyjnych. Opiera się na przeszukiwaniu lokalnego sąsiedztwa danego rozwiązania. Tego typu metody silną tendencję do zatrzymywania się w optimum lokalnym. Algorytm przeszukiwania z tabu zakłada przechowywanie pewnego zbioru ostatnio odwiedzonych rozwiązań, tak aby przeszukiwanie nie \textit{utknęło} w optimum lokalnym.
+\textbf{Przeszukiwanie z tabu} jest heurystyczną metodą służącą do rozwiązywanie problemów optymalizacyjnych. Opiera się na przeszukiwaniu lokalnego sąsiedztwa danego rozwiązania. Tego typu metody posiadają silną tendencję do zatrzymywania się w optimum lokalnym. Algorytm przeszukiwania z tabu zakłada przechowywanie pewnego zbioru ostatnio odwiedzonych rozwiązań, tak aby przeszukiwanie nie \textit{utknęło} w optimum lokalnym.
 
 Algorytm może być używany do różnego typu problemów optymalizacyjnych. Jego postać ogólna została przedstawiona w \cite{alhe-tabu}. Dla zastosowania algorytmu do rozwiązania problemu kolorowania grafu, należy uszczegółowić jego poszczególne elementy, co jest tematem kolejnych podrozdziałów.
 
@@ -44,7 +47,7 @@ Początkowa liczba kolorów $k$ będzie stanowiła parametr algorytmu. Wierzcho�
 
 
 \subsection{Sąsiedztwo}
-Zgodnie z \cite{coloring} \textbf{sąsiednim} rozwiązaniem $y\in N(x)$ do rozwiązania $x$, nazywamy takie rozwiązanie \textit{y}, które można uzyskać poprzez zmianę przynależności jednego z wierzchołków rozwiązania \textit{x}. Generacja jednego sąsiada polega na wylosowaniu jednej z niepustych klas $C_i$, następnie wylosowaniu wierzchołka $v\in C_i$ oraz liczby $j\in\langle1,k+1\rangle$, gdzie $k$ to liczba aktualnie użytych kolorów (klas). Następnie wierzchołek $v$ jest kolorowany na kolor $j$. Jeżeli wylosowano tę samą klasę, do której należy wierzchołek, losowanie jest powtarzane.
+Zgodnie z \cite{coloring} \textbf{sąsiednim} rozwiązaniem $y\in N(x)$ do rozwiązania $x$, nazywamy takie rozwiązanie \textit{y}, które można uzyskać poprzez zmianę przynależności jednego z wierzchołków rozwiązania \textit{x}. Generacja jednego sąsiada polega na wylosowaniu jednej z niepustych klas $C_i$, następnie wylosowaniu wierzchołka $v\in C_i$ oraz liczby $j\in\langle1,k\rangle$, gdzie $k$ to liczba klas. Następnie wierzchołek $v$ jest kolorowany na kolor $j$. Jeżeli wylosowano tę samą klasę, do której należy wierzchołek, losowanie jest powtarzane.
 
 W każdym kroku generowane jest $g$ sąsiadów \textit{punktu roboczego}\footnote{tj. aktualnie przetwarzanego}, gdzie $g$ stanowi parametr algorytmu. Spośród zbioru sąsiadów wybierany jest najlepszy element względem funkcji kosztu, który nie należy do listy tabu. Będzie on nowym punktem roboczym.
 
@@ -55,6 +58,7 @@ W naszym projekcie skorzystamy z metody zarządzania oraz reprezantacji listy ta
 Aby możliwe było porównywanie poszczególnych rozwiązań, należy zdefiniować funkcję kosztu, która ma być zminimalizowana przez algorytm przeszukiwania z tabu. Pochodzi ona z artykułu \cite{coloring}. Ma ona postać:
 
 \begin{equation}
+\label{cost}
 cost(x) = - \sum_{i=1}^{k}|C_i|^2 + \sum_{i=1}^{k} 2\cdot|C_i|\cdot|E_i|
 \end{equation}
 
@@ -79,6 +83,72 @@ Reasumując, algorytm będzie przyjmował następujące parametry:
 \item Rozmiar listy tabu
 \end{itemize}
 
+
+\section{Implementacja}
+Algorytm zostanie zaimplementowany w języku C++. Będzie on odczytywał graf w formie tekstowej ze standardowego wejścia i wypisywał rozwiązanie na standardowe wyjście. Możliwe będzie wypisywanie historii wartości funkcji kosztu aktualnego punktu roboczego w celu zbadania jej zmienności w ciągu kolejnych iteracji algorytmu oraz wypisanie najlepszego znalezionego rozwiązania.
+
+Do automatyzacji procesu ewaluacji rozwiązania posłuży skrypt w języku Python, który będzie powtarzał eksperymenty odpowiednią liczbę razy oraz rysował wykresy obrazujące zmianę wartości funkcji kosztu.
+
+\subsection{Struktury danych}
+\subsubsection{Reprezentacja grafu}
+Graf zostanie zaimplementowany jako \textbf{macierz sąsiedztwa}. Z punktu widzenia naszego algorytmu istotna jest bowiem możliwość sprawdzania w czasie stałym, czy dana krawędź istnieje. W tym celu użyta zostanie klasa \textit{boost::adjacency\_matrix} z bilbioteki \textit{Boost Graph}.
+
+\subsubsection{Lista tabu}
+Lista tabu zostanie zaimplementowana jako bufor cykliczny o stałym rozmiarze, który umożliwia dodawanie elementów na koniec oraz usuwanie z początku w czasie stałym. Do implementacji listy tabu zostanie użyta klasa \textit{boost::circular\_buffer} z biblioteki \textit{Boost Container}.
+
+\subsubsection{Punkt roboczy}
+Punkt roboczy, czyli aktualnie najlepsze rozwiązanie będzie reprezentowany jako \textit{wektor klas}, gdzie \textit{klasą} nazywamy podzbiór wierzchołków. Liczba klas $k$ jest stała, w wektorze są zatem przechowywane także takie klasy, które są puste. \textit{Klasa} składa się z listy wierzchołków do niej należących oraz liczby konfliktów w danej klasie.
+
+\newpage
+\subsection{Pseudokod}
+
+\begin{algorithmic}
+
+\State $G\gets odczytaj()$
+
+\State $x\gets zainicjujPunktRoboczy(k)$
+\Comment parametr k - początkowa liczba klas
+
+\State $globalnieNajlepszy \gets x$
+\State $tabu\gets zainicjujListeTabu(t)$
+\Comment parametr t - rozmiar listy tabu
+
+\State $i\gets 0$
+\While {$i < iters$}
+\Comment parametr iters - liczba iteracji
+
+\State $ruchyVek \gets zainicjujWektorRuchow()$
+\For {$j\gets0; j < N; j++$}
+\Comment Generacja losowych sasiadow
+\State $cPocz \gets rand(0, k)$
+\State $v \gets rand(0, nWierzcholkow(cPocz))$
+\State $cKon \gets rand(0, k)$
+\State $ruchyVek.push\_back(cPocz, v, cKon)$
+\EndFor
+
+\State $najlepszyDot \gets null$
+\For {$ g \in ruchyWek$}
+\Comment Wybór najlepszego sąsiada
+\If {$koszt(x, g) < koszt(x, najlepszyDot) \;\textbf{and}\; g\; \textbf{not in}\; tabu$}
+\State {$najlepszyDot \gets g$}
+\EndIf
+\EndFor
+
+\State {$x.wykonajRuch(najlepszyDot)$}
+\State {$tabu.dodajRuchOdwrotny(najlepszyDot)$}
+\State {$i++$}
+
+\If{$koszt(x) < koszt(globalnieNajlepszy)$}
+\State{$globalnieNajlepszy \gets x$}
+\EndIf
+
+\EndWhile
+\State {Zwróć $globalnieNajlepszy$}
+\end{algorithmic}
+
+Powyższy pseudokod opisuje ogólne działanie algorytmu. Zaniedbane są pewne szczegóły w tym obliczanie funkcji kosztu na podstawie wzoru \ref{cost}. Możliwa jest optymalizacja tej funkcji poprzez obliczanie jedynie zmiany jej wartości po wykonaniu potencjalnego ruchu. Wiadomo, że wartość $|C_{cPocz}|$ spadnie o 1 a wartość $|C_{cKon}|$ wzrośnie o 1. Liczba konfliktów wewnątrz klasy zmieni się także jedynie dla klas $cPocz$ oraz $cKon$. Aby sprawdzić o ile zmniejszy się wartość $|E_{cPocz}|$ wystarczy policzyć ile wierzchołków z tej klasy konfliktowało z wierzchłkiem $v$. Podobnie dla $E_{cKon}$ wystarczy policzyć ile wierzchołków byłoby w konflikcie z wierzchołkiem $v$ po dodaniu go do klasy.
+
+
 \section{Badanie rozwiązania}
 \subsection{Dobór parametrów}
 Przed rozpoczęciem właściwych eksperymentów i oceny efektywności rozwiązania, konieczne jest określenie optymalnych wartości parametrów tj. przede wszystkim długości listy tabu oraz rozmiaru sąsiedztwa. Parametry te zostaną ustalone doświadczalnie – algorytm zostanie uruchomiony dla kilku standardowych przypadków grafów, np. grafu losowego $G_{n,p}$\footnote{Jest to graf losowy, generowany według modelu Erdősa–Rényi \cite{erdos59a}, gdzie $n$ oznacza ilość wierzchołków, natomiast $p$ oznacza prawdopodobieństwo, że dowolna z możliwych krawędzi zostanie włączona do grafu.} z różnymi wartościami parametrów. Pozwoli to ustalić, dla jakich wartości parametrów algorytm działa efektywnie.
@@ -91,13 +161,6 @@ Najważniejszym kryterium ewaluacji rozwiązania dla konkretnego przypadku grafu
 
 Dla potrzeb ewaluacji rozwiązania algorytm zostanie uruchomiony na przypadkach grafów opisanych we wspomnianym artykule. Uzyskana liczba chromatyczna oraz czas działania i liczba iteracji programu zostaną porównane z wynikami przedstawionymi w artykule.
 
-\section{Implementacja}
-Algorytm zostanie zaimplementowany w języku C++. Będzie on odczytywał graf w formie tekstowej ze standardowego wejścia i wypisywał rozwiązanie na standardowe wyjście. Możliwe będzie wypisywanie historii wartości funkcji kosztu aktualnego punktu roboczego w celu zbadania jej zmienności w ciągu kolejnych iteracji algorytmu oraz wypisanie najlepszego znalezionego rozwiązania.
-
-Do automatyzacji procesu ewaluacji rozwiązania posłuży skrypt w języku Python, który będzie powtarzał eksperymenty odpowiednią liczbę razy oraz rysował wykresy obrazujące zmianę wartości funkcji kosztu.
-
-\subsection{Użyte struktury danych}
-\subsubsection{Reprezentacja grafu}
 
 
 \bibliography{sources}
