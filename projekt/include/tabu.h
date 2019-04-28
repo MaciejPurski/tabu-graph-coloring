@@ -61,7 +61,7 @@ private:
     int evaluateSolution(Solution &s);
 public:
     TabuSearch(int nIterations, int tabuSize, size_t kColors, int nNeighbours, const Graph &ng);
-    Solution optimize();
+    Solution optimize(bool verbose);
 
 
 };

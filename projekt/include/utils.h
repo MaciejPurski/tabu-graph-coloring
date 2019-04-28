@@ -29,6 +29,7 @@ static const std::string help = "Following arguments are obligatory:\n"
                                 "By default the program prints found solution, its cost and number of colors."
                                 "Following arguments are used to control output:\n"
                                 "\t--show-historical-cost\n\n"
-                                "\t--show-only-colors\n\n";
+                                "\t--show-best-cost\n\n"
+                                "\t--print-coloring\n\n";
 
 #endif
