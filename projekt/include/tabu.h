@@ -46,7 +46,7 @@ typedef std::array<unsigned int, 3> Move;
 
 class TabuSearch {
 private:
-    boost::circular_buffer<Move> tabuList;
+    boost::circular_buffer<std::pair<unsigned int, unsigned int>> tabuList;
     Solution workPoint;
     Solution bestSolution;
     int currentCost;
