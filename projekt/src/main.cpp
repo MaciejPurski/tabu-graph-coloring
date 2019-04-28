@@ -28,12 +28,14 @@ int main(int argc, char *argv[])
     Solution s = t.optimize(args.find("--show-historical-cost") != args.end());
 
     if (args.find("--show-best-cost") != args.end()) {
-        std::cout << "Best cost: " << std::accumulate(s.begin(), s.end(), 0, [](int acc, ColorClass &x) { return acc + x.cost;});
+        std::cout << "Best cost: " << std::accumulate(s.begin(), s.end(), 0, [](int acc, ColorClass &x) { return acc + x.cost;}) << std::endl;;
         std::cout << std::endl;
     }
 
     std::cout << "Chromatic number: ";
     std::cout << std::count_if(s.begin(), s.end(), [](ColorClass &x) -> bool {return !x.vertices.empty();}) << std::endl;
+    std::cout << "Number of conflicts: " << std::accumulate(s.begin(), s.end(), 0, [](int acc, ColorClass &x) { return acc + x.nConflicts;});
+    std::cout << std::endl;
 
     if (args.find("--print-coloring") != args.end()) {
         for (int i = 0; i < s.size(); i++) {
