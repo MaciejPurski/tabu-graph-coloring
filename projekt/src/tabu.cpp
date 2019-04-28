@@ -27,33 +27,31 @@ void ColorClass::updateConflicts()
 
 int ColorClass::costChangeAfterRemoval(unsigned int v)
 {
-    int diff = 1; // first part of the equation
-
-    int conflicts = 0;
+    int newConflicts = 0;
 
     for (std::list<int>::const_iterator it = vertices.begin(); it != vertices.end(); ++it) {
         if (*it == v)
             continue;
 
         if (boost::edge(*it, v, g).second)
-            conflicts++;
+            newConflicts++;
     }
 
-    return diff + 2 * ((vertices.size() - 1) * (nConflicts - conflicts) - vertices.size() * nConflicts);
+    return -((vertices.size() - 1) * (vertices.size() - 1)) + 2 *((vertices.size() - 1) * (nConflicts - newConflicts))
+           -cost;
 }
 
 int ColorClass::costChangeAfterAdding(unsigned int v)
 {
-    int diff = -1; // first part of the equation
-
-    int conflicts = 0;
+    int newConflicts = 0;
 
     for (auto it = vertices.begin(); it != vertices.end(); ++it) {
         if (boost::edge(*it, v, g).second)
-            conflicts++;
+            newConflicts++;
     }
+    return -((vertices.size() + 1) * (vertices.size() + 1)) + 2 *((vertices.size() + 1) * (nConflicts + newConflicts))
+           -cost;
 
-    return diff + 2 * ((vertices.size() + 1) * (nConflicts + conflicts) - vertices.size() * nConflicts);
 }
 
 TabuSearch::TabuSearch(int nIterations, int tabuSize, size_t kColors, int nNeighbours, const Graph &ng) : tabuList(tabuSize),
@@ -151,19 +149,14 @@ Solution TabuSearch::optimize(bool verbose)
         for (Move &m : neighbours) {
             int cost;
 
-            workPoint[m[0]].vertices.remove(m[2]);
-            workPoint[m[1]].vertices.push_front(m[2]);
-
-            cost = evaluateSolution(workPoint);
+            cost = workPoint[m[0]].costChangeAfterRemoval(m[2]) +
+                   workPoint[m[1]].costChangeAfterAdding(m[2]);
 
             if (cost < bestMoveCost &&
                 std::find(tabuList.begin(), tabuList.end(), std::make_pair(m[1], m[2])) == tabuList.end()) {
                 bestMoveCost = cost;
                 bestMove = m;
             }
-
-            workPoint[m[0]].vertices.push_back(m[2]);
-            workPoint[m[1]].vertices.pop_front();
         }
 
         tabuList.push_back({bestMove[0], bestMove[2]});
