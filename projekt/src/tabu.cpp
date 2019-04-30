@@ -153,7 +153,8 @@ Solution TabuSearch::optimize(bool verbose)
                    workPoint[m[1]].costChangeAfterAdding(m[2]);
 
             if (cost < bestMoveCost &&
-                std::find(tabuList.begin(), tabuList.end(), std::make_pair(m[1], m[2])) == tabuList.end()) {
+                (std::find(tabuList.begin(), tabuList.end(), std::make_pair(m[1], m[2])) == tabuList.end() ||
+                currentCost + cost < bestCost)) {
                 bestMoveCost = cost;
                 bestMove = m;
             }
@@ -182,4 +183,14 @@ Solution TabuSearch::optimize(bool verbose)
 
 
     return bestSolution;
+}
+
+int TabuSearch::chromaticNumber(Solution &s)
+{
+    return std::count_if(s.begin(), s.end(), [](ColorClass &x) -> bool {return !x.vertices.empty();});
+}
+
+int TabuSearch::numberOfConflicts(Solution &s)
+{
+    return std::accumulate(s.begin(), s.end(), 0, [](int acc, ColorClass &x) { return acc + x.nConflicts;});
 }

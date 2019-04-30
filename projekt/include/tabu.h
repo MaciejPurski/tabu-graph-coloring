@@ -62,8 +62,8 @@ private:
 public:
     TabuSearch(int nIterations, int tabuSize, size_t kColors, int nNeighbours, const Graph &ng);
     Solution optimize(bool verbose);
-
-
+    static int chromaticNumber(Solution &s);
+    static int numberOfConflicts(Solution &s);
 };
 
 

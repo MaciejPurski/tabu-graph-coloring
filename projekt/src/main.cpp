@@ -33,15 +33,16 @@ int main(int argc, char *argv[])
     }
 
     std::cout << "Chromatic number: ";
-    std::cout << std::count_if(s.begin(), s.end(), [](ColorClass &x) -> bool {return !x.vertices.empty();}) << std::endl;
-    std::cout << "Number of conflicts: " << std::accumulate(s.begin(), s.end(), 0, [](int acc, ColorClass &x) { return acc + x.nConflicts;});
+    std::cout << TabuSearch::chromaticNumber(s) << std::endl;
+    std::cout << "Number of conflicts: " << TabuSearch::numberOfConflicts(s) << std::endl;
     std::cout << std::endl;
 
     if (args.find("--print-coloring") != args.end()) {
         for (int i = 0; i < s.size(); i++) {
             if (s[i].vertices.empty())
                 continue;
-            std::cout << "Class: " << i << "\nNumber of conflicts: " << s[i].nConflicts <<  std::endl << "\t";
+            std::cout << "Class: " << i << "\nNumber of conflicts: " << s[i].nConflicts <<  std::endl;
+            std::cout << "Number of vertices: " << s[i].vertices.size() << std::endl << "\t";
             for (auto v : s[i].vertices)
                 std::cout << v << " ";
             std::cout << std::endl;
