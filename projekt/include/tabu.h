@@ -1,45 +1,13 @@
 #ifndef TABU_H
 #define TABU_H
+
 #include <boost/circular_buffer.hpp>
 #include <list>
 #include <vector>
 #include <utils.h>
 #include <algorithm>
 #include <random>
-
-
-struct ColorClass {
-    std::list<int> vertices;
-    int nConflicts;
-    const Graph &g;
-    int cost;
-
-    ColorClass(const Graph &_g) : g(_g) {
-        nConflicts = 0;
-        cost = 0;
-    }
-
-    ColorClass(const ColorClass &nC) : g(nC.g)
-    {
-        vertices = nC.vertices;
-        nConflicts = nC.nConflicts;
-        cost = nC.cost;
-    }
-
-    ColorClass &operator=(const ColorClass &c) {
-        vertices = c.vertices;
-        nConflicts = c.nConflicts;
-        cost = c.cost;
-
-        return *this;
-    }
-
-
-    void updateConflicts();
-    void updateCost();
-    int costChangeAfterRemoval(unsigned int v);
-    int costChangeAfterAdding(unsigned int v);
-};
+#include <colorClass.h>
 
 typedef std::vector<ColorClass> Solution;
 typedef std::array<unsigned int, 3> Move;
@@ -52,20 +20,24 @@ private:
     int currentCost;
     int bestCost;
     
-    const int nIterations;
-    const int nNeighbours;
+    const unsigned int nIterations;
+    const unsigned int nNeighbours;
     const Graph& g;
 
     std::vector<Move> getNeighbours();
     
     int evaluateSolution(Solution &s);
 public:
-    TabuSearch(int nIterations, int tabuSize, size_t kColors, int nNeighbours, const Graph &ng);
-    Solution optimize(bool verbose);
-    static int chromaticNumber(Solution &s);
-    static int numberOfConflicts(Solution &s);
+    int getCost() const;
+    unsigned int getChromaticNumber() const;
+    unsigned int getNumberOfConflicts() const;
+    Solution getSolution() const;
+    TabuSearch(unsigned int nIterations, unsigned int tabuSize, size_t kColors, unsigned int nNeighbours, const Graph &ng);
+    void optimize(bool verbose);
 };
 
+unsigned int chromaticNumber(const Solution &s);
+unsigned int numberOfConflicts(const Solution &s);
 
 
 

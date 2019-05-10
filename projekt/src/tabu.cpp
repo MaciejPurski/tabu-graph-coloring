@@ -1,60 +1,7 @@
 #include "tabu.h"
 #include <limits>
 
-
-void ColorClass::updateCost()
-{
-    cost = -(vertices.size() * vertices.size()) + 2 * (vertices.size() * nConflicts);
-}
-
-void ColorClass::updateConflicts()
-{
-    int n = 0;
-
-    for (auto it = vertices.begin(); it != vertices.end(); it++) {
-        auto it2 = it;
-        it2++;
-        for (; it2 != vertices.end(); it2++) {
-            if (boost::edge(*it, *it2, g).second) {
-                n++;
-            }
-
-        }
-    }
-
-    nConflicts = n;
-}
-
-int ColorClass::costChangeAfterRemoval(unsigned int v)
-{
-    int newConflicts = 0;
-
-    for (std::list<int>::const_iterator it = vertices.begin(); it != vertices.end(); ++it) {
-        if (*it == v)
-            continue;
-
-        if (boost::edge(*it, v, g).second)
-            newConflicts++;
-    }
-
-    return -((vertices.size() - 1) * (vertices.size() - 1)) + 2 *((vertices.size() - 1) * (nConflicts - newConflicts))
-           -cost;
-}
-
-int ColorClass::costChangeAfterAdding(unsigned int v)
-{
-    int newConflicts = 0;
-
-    for (auto it = vertices.begin(); it != vertices.end(); ++it) {
-        if (boost::edge(*it, v, g).second)
-            newConflicts++;
-    }
-    return -((vertices.size() + 1) * (vertices.size() + 1)) + 2 *((vertices.size() + 1) * (nConflicts + newConflicts))
-           -cost;
-
-}
-
-TabuSearch::TabuSearch(int nIterations, int tabuSize, size_t kColors, int nNeighbours, const Graph &ng) : tabuList(tabuSize),
+TabuSearch::TabuSearch(unsigned int nIterations, unsigned int tabuSize, size_t kColors, unsigned int nNeighbours, const Graph &ng) : tabuList(tabuSize),
                                                                                          workPoint(kColors, ColorClass(ng)),
                                                                                          g(ng), nIterations(nIterations),
                                                                                          nNeighbours(nNeighbours)
@@ -65,20 +12,23 @@ TabuSearch::TabuSearch(int nIterations, int tabuSize, size_t kColors, int nNeigh
     /* Randomly initialize classess */
     std::random_device rd;
     std::vector<int> v(boost::num_vertices(g));
+
     for (int i = 0; i < v.size(); i++)
         v[i] = i;
     
+    /* First k randomly chosen vertices are assigned
+       to k subsequent classes */ 
     std::random_shuffle(v.begin(), v.begin() + kColors);
-    for (int i = 0; i < kColors; i++) {
-        workPoint[i].vertices.push_back(v[i]);
-    }
+    for (int i = 0; i < kColors; i++)
+        workPoint[i].addVertex(v[i]);
 
     std::mt19937 rng(rd());
     std::uniform_int_distribution<int> uni(0, kColors - 1);
 
-    for (auto it = v.begin() + kColors; it != v.end(); it++) {
-        workPoint[uni(rng)].vertices.push_back(*it);
-    }
+    /* Each of the e - k vertices is assigned to one of the
+       k classes */
+    for (auto it = v.begin() + kColors; it != v.end(); it++)
+        workPoint[uni(rng)].addVertex(*it);
 
     bestSolution = workPoint;
     currentCost = evaluateSolution(workPoint);
@@ -92,7 +42,7 @@ int TabuSearch::evaluateSolution(Solution &s)
     for (ColorClass &c : s) {
         c.updateConflicts();
         c.updateCost();
-        cost += c.cost;
+        cost += c.getCost();
     }
 
     return cost;
@@ -110,26 +60,21 @@ std::vector<Move> TabuSearch::getNeighbours()
         unsigned int cOld;
         unsigned int cNew;
         
-        /* Generate random non empty class */
+        /* Draw random non empty class */
         do {
             cOld = uniColor(rng);
-        } while (workPoint[cOld].vertices.size() == 0);
+        } while (workPoint[cOld].isEmpty());
 
         /* Generate destination class different from the old one */
         do {
             cNew = uniColor(rng);
         } while (cNew == cOld);
 
-        std::uniform_int_distribution<unsigned int> uniV(0, workPoint[cOld].vertices.size() - 1);
+        /* Draw a vertex from the old class, which is a candidate
+           to be moved to the new class */
+        std::uniform_int_distribution<unsigned int> uniV(0, workPoint[cOld].nVertices() - 1);
         unsigned int index = uniV(rng);
-
-        unsigned int v;
-        auto it = workPoint[cOld].vertices.begin();
-
-        for (int i = 0; i < index; i++)
-            it++;
-
-        v = *it;
+        unsigned int v = workPoint[cOld].getVertex(index);
 
         neighbours.push_back({cOld, cNew, v});
     }
@@ -137,40 +82,41 @@ std::vector<Move> TabuSearch::getNeighbours()
     return neighbours;
 }
 
-Solution TabuSearch::optimize(bool verbose)
+void TabuSearch::optimize(bool verbose)
 {
     for (int i = 0; i < nIterations; i++) {
-        std::vector<Move> neighbours = getNeighbours();
-
         int bestMoveCost = std::numeric_limits<int>::max();
         Move bestMove;
 
-        /* Find best neighbour move */
+        std::vector<Move> neighbours = getNeighbours();
+
+        /* Find best neighbour by comparing cost change*/
         for (Move &m : neighbours) {
-            int cost;
+            int costChange;
 
-            cost = workPoint[m[0]].costChangeAfterRemoval(m[2]) +
-                   workPoint[m[1]].costChangeAfterAdding(m[2]);
+            costChange = workPoint[m[0]].costChangeAfterRemoval(m[2]) +
+                         workPoint[m[1]].costChangeAfterAdding(m[2]);
 
-            if (cost < bestMoveCost &&
-                (std::find(tabuList.begin(), tabuList.end(), std::make_pair(m[1], m[2])) == tabuList.end() ||
-                currentCost + cost < bestCost)) {
-                bestMoveCost = cost;
+            /* A candidate move m is chosen as best if its cost change is
+               smaller than bestMoveCost and it is not a tabu move. However,
+               if move m is on tabu it still can be chosen if it is better
+               than the global optimum */
+            if (costChange < bestMoveCost &&
+                (std::find(tabuList.begin(),
+                           tabuList.end(),
+                           std::make_pair(m[1], m[2])) == tabuList.end() ||
+                currentCost + costChange < bestCost)) {
+                bestMoveCost = costChange;
                 bestMove = m;
             }
         }
-
         tabuList.push_back({bestMove[0], bestMove[2]});
 
-        /* Perform move */
-        // TODO optimize
-        workPoint[bestMove.at(0)].vertices.remove(bestMove.at(2));
-        workPoint[bestMove.at(1)].vertices.push_back(bestMove.at(2));
+        ColorClass::performMove(workPoint[bestMove.at(0)],
+                                workPoint[bestMove.at(1)],
+                                bestMove.at(2));
 
-        workPoint[bestMove.at(0)].updateConflicts();
-        workPoint[bestMove.at(1)].updateConflicts();
-
-        currentCost = evaluateSolution(workPoint);
+        currentCost += bestMoveCost;;
 
         if (verbose)
             std::cout << "Current cost: " << currentCost << std::endl;
@@ -180,17 +126,34 @@ Solution TabuSearch::optimize(bool verbose)
             bestCost = currentCost;
         }
     }
+}
 
+int TabuSearch::getCost() const
+{
+    return bestCost;
+}
 
+unsigned int TabuSearch::getChromaticNumber() const
+{
+    return chromaticNumber(bestSolution);
+}
+
+unsigned int TabuSearch::getNumberOfConflicts() const
+{
+    return numberOfConflicts(bestSolution);
+}
+
+Solution TabuSearch::getSolution() const
+{
     return bestSolution;
 }
 
-int TabuSearch::chromaticNumber(Solution &s)
+unsigned int chromaticNumber(const Solution &s)
 {
-    return std::count_if(s.begin(), s.end(), [](ColorClass &x) -> bool {return !x.vertices.empty();});
+    return std::count_if(s.begin(), s.end(), [](const ColorClass &x) -> bool {return x.nVertices() != 0;});
 }
 
-int TabuSearch::numberOfConflicts(Solution &s)
+unsigned int numberOfConflicts(const Solution &s)
 {
-    return std::accumulate(s.begin(), s.end(), 0, [](int acc, ColorClass &x) { return acc + x.nConflicts;});
+    return std::accumulate(s.begin(), s.end(), 0, [](int acc, const ColorClass &x) { return acc + x.getNConflicts();});
 }

@@ -14,7 +14,3 @@ link_directories(${Boost_LIBRARY_DIR})
 
 add_executable(tabu-coloring ${SOURCES})
 target_link_libraries(tabu-coloring ${Boost_LIBRARIES})
-
-
-
-

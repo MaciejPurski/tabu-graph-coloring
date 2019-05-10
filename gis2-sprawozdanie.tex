@@ -105,6 +105,7 @@ Punkt roboczy, czyli aktualnie najlepsze rozwiązanie będzie reprezentowany jak
 
 \newpage
 \subsection{Pseudokod}
+\label{ssec:pseudo}
 
 \begin{algorithmic}
 
@@ -161,18 +162,19 @@ Przed rozpoczęciem właściwych eksperymentów i oceny efektywności rozwiązan
 Ważnym elementem oceny rozwiązania jest zbadanie, jak zmienia się wartość funkcji kosztu wraz z kolejnyi iteracjami. Aby można było zbadać jej zmienność w ciągu kolejnych iteracji, program będzie logował wartości funkcji celu w kolejnych iteracjach. Dane te zostaną zebrane w formie wykresów. Pozwoli to sprawdzić, czy wartość funkcji zbiega do minimum, a także, ile iteracji jest do tego potrzebne.
 
 \subsection{Ewaluacja rozwiązania}
+\label{ssec:eval}
 Najważniejszym kryterium ewaluacji rozwiązania dla konkretnego przypadku grafu \textit{G} będzie uzyskana liczba chromatyczna \textit{k}. Aby można było w sposób miarodajny określić efektywność implementacji, należy przetestować algorytm na wielu różnorodnych przypadkach grafów. W tym celu zostaną wykorzystane standardowe grafy wykorzystywane w wielu artykułach traktujących o tematyce kolorowania grafów. Doskonały przegląd tych grafów, a także wyników uzyskanych przez najlepsze algorytmy można znaleźć w \cite{article}.
 
 Dla potrzeb ewaluacji rozwiązania algorytm zostanie uruchomiony na przypadkach grafów opisanych we wspomnianym artykule. Uzyskana liczba chromatyczna oraz czas działania i liczba iteracji programu zostaną porównane z wynikami przedstawionymi w artykule.
 
 \section{Eksperymenty}
-Zostały przeprowadzone dwie fazy eksperymentów: badanie parametrów oraz poszukiwanie najlepszych rozwiązań - jako najlepsze uznajemy rozwiązanie o jak najniższej liczbie chromatycznej bez konfliktów. TODO
+Zostały przeprowadzone dwie fazy eksperymentów: badanie parametrów oraz poszukiwanie najlepszych rozwiązań - jako najlepsze uznajemy rozwiązanie o jak najniższej liczbie chromatycznej bez konfliktów. Eksperymenty polegały na wielokrotnym uruchamianiu algorytmu dla różnych rodzajów grafów, przy kilku zestawach parametrów startowych. Podczas eksperymentów wykorzystano zestaw grafów stworzonych na potrzeby konkursu \textit{The Second DIMACS Implementation Challenge}\cite{Johnson}. Dotyczył on implementacji algorytmów rozwiązujących problemy NP-trudne na grafach, m.in. problem kolorowania wierzchołków. Powstały dla celów konkursu zbiór problemów obejmuje grafy o różnej budowie, dlatego świetnie nadaje się do przetestowania przygotowanej implementacji. 
 
 \subsection{Badanie parametrów}
-Badaniom podlegało zachowanie algorytmu względem rozmiaru sąsiedztwa oraz rozmiaru listy tabu. TODO
+Badaniom podlegało zachowanie algorytmu względem rozmiaru sąsiedztwa oraz rozmiaru listy tabu. Celem badania było sprawdzenie, czy rozmiar sąsiedztwa i długość listy tabu zależą silnie od charakterystyki konkretnego grafu. Poszukiwany był taki zestaw parametrów, który byłby na tyle ogólny, by dało się go zastosować do dowolnego grafu, którego charakterystyka nie jest znana. 
 
 \subsubsection{Rozmiar sąsiedztwa}
-Na rysunkach \ref{fig:n1} oraz \ref{fig:n2} przedstawiono badanie rozmiaru sąsiedztwa. \textit{TODO: Tutaj coś o tym, jak to badaliśmy. Wnioski będą pod badaniami}
+Na rysunkach  oraz  przedstawiono badanie rozmiaru sąsiedztwa. Aby sprawdzić, jak rozmiar sąsiedztwa wpływa na działanie algorytmu, z różnych rodzin grafów wybrano po kilku przedstawicieli. Rozmiar sąsiedztwa był wyznaczany jako iloczyn liczby wierzchołków i pewnego współczynnika. Wartości tego współczynnika zmieniały się w zakresie $<0.1, 1.0>$, z krokiem równym $0.1$. Na każdy współczynnik przyjęto 10 lub 6 uruchomień algorytmu. Otrzymywana liczba kolorów była zapisywana do logu, by następnie wyznaczyć minimalną, maksymalną i średnią liczbę kolorów uzyskaną przy danym współczynniku. Długość listy tabu pozostawała niezmienna, natomiast początkowa liczba kolorów stanowiła około $0.4$ liczby wierzchołków.
 
 \begin{figure} [H]
 
@@ -185,8 +187,9 @@ Na rysunkach \ref{fig:n1} oraz \ref{fig:n2} przedstawiono badanie rozmiaru sąsi
 \subfloat{\includegraphics[width = 2.8in]{fpsol2}} \\
 \subfloat{\includegraphics[width = 2.8in]{games120}} &
 \subfloat{\includegraphics[width = 2.8in]{homer}} \\
+
 \end{tabular}
-\label{fig:n1}
+
 \caption{Badanie rozmiaru sąsiedztwa}
 \end{figure}
 
@@ -207,10 +210,14 @@ Na rysunkach \ref{fig:n1} oraz \ref{fig:n2} przedstawiono badanie rozmiaru sąsi
 \caption{Badanie rozmiaru sąsiedztwa c.d.}
 \end{figure}
 
-\textit{TODO: Wnioski z badania rozmiaru sąsiedztwa}
+Zgodnie z przewidywaniami, w większości przypadków rozmiar sąsiedztwa miał duży wpływ na zwracaną liczbę kolorów. Jak można zaobserwować na wykresach, usilne zwiększanie rozmiaru nie owocowało znaczącą poprawą rozwiązania. Przeciwnie, w wielu przypadkach zarówno średnia jak i minimalna liczba kolorów stawały się coraz gorsze wraz ze wzrostem sąsiedztwa. Z analizy wyników można odczytać, że rozmiary sąsiedztwa nie przekraczające wartości $0.5 V$ sprawdzały się najlepiej. Należy jednak zauważyć, że optymalny współczynnik, dający najmniejszą średnią liczbę kolorów jest mocno zależny od konkretnego przypadku grafu.
+
+Na podstawie wyników eksperymentu, w trakcie wykonywania poszukiwań liczby chromatycznej, opisanych w kolejnych rozdziałach, jako optymalny rozmiar sąsiedztwa przyjęto wartość około $0.5$. Potwierdzenie tej wartości można też odnaleźć w \cite{Hertz1987}.
+
+Warto również wspomnieć, że rozmiar sąsiedztwa bardzo silnie wpływa na czas wykonania programu. Z tego właśnie powodu, rozpoczynanie poszukiwań z dużym sąsiedztwem może okazać się nieopłacalne.
 
 \subsubsection{Badanie rozmiaru listy tabu}
-\textit{TODO: Opis, na czym polegały badania, ile powtórzeń, zmienność parametrów itp}
+Badanie wpływu rozmiaru listy tabu przebiegało analogicznie do badania rozmiaru sąsiedztwa. Podobnie jak poprzednio, dla różnych rodzajów grafów uruchamiano algorytm z kilkoma długościami listy tabu. Długości te pochodziły ze zbioru $\lbrace7,10,20,40,100\rbrace$. Dla każdej długości tabu uruchomiono algorytm 5 razy, za każdym razem logując zwracaną liczbę kolorów. Wyniki w postaci minimalnej, maksymalnej i średniej liczby kolorów zaprezentowano na wykresach. Pozostałe parametry, tj. początkowa liczba kolorów i rozmiar sąsiedztwa ustalono odpowiednio na $0.4V$ i $0.5V$.
 
 \begin{figure}  [H]
 \begin{tabular}{cc}
@@ -242,13 +249,42 @@ Na rysunkach \ref{fig:n1} oraz \ref{fig:n2} przedstawiono badanie rozmiaru sąsi
 \caption{Badanie rozmiaru tabu c.d.}
 \end{figure}
 
-\textit{TODO wnioski}
+Podobnie jak w przypadku rozmiaru sąsiedztwa, długość listy tabu w większości przypadków miała wpływ na zwracaną liczbę kolorów. Analiza wyników wskazuje, że krótsze listy tabu generują lepsze rezultaty. Obserwując wszystkie wykresy można zauważyć, że tabu o długości 7 niemal w każdym wypadku zwróciło minimalną liczbę kolorów. Wartość ta jest również postulowana w \cite{Hertz1987}. Z tego powodu, do wyznaczania liczby chromatycznej w kolejnych rozdziałach przyjęto listę tabu o długości 7.
 \subsubsection{Początkowa liczba kolorów}
-\textit{TODO: Tutaj te spostrzeżenia o początkowej liczbie kolorów, można coś napisać o tej eksploracji i eksploatacji}
+Ważnym elementem algorytmu jest początkowa liczba kolorów. Oczywistym jest, że aby algorytm odnalazł kolorowanie bez konfliktów, liczba ta nie może być mniejsza od rzeczywistej liczby chromatycznej grafu. Zazwyczaj jednak nie posiadamy dobrego oszacowania tej liczby. Testy algorytmu wykazały jednak dużą odporność na początkową liczbę kolorów tj. nawet startując od liczby kolorów wprost równej liczbie wierzchołków, algorytm jest w stanie znacząco zredukować liczbę użytych kolorów.
+
+W przypadku rozważanych tutaj grafów, liczby chromatyczne były dokładnie znane. Z tego też powodu, dla celu automatyzacji przeprowadzanych testów, przyjęto bezpieczną wartość $0.4 V$, która w każdym przypadku była większa od liczby chromatycznej.
+
+Należy tutaj zauważyć, że początkowa liczba kolorów ma istotne znaczenie dla zmiany ciężaru pomiędzy eksploracją i eksploatacją przestrzeni rozwiązań. Duża liczba możliwych kolorów będzie wywierać presję w stronę eksploracji. Wynika to ze sposobu generowania sąsiedniego rozwiązania, które w swoim ostatnim kroku przypisuje wierzchołkowi losowy kolor z zakresu 1 do k.
+
+Temat balansu pomiędzy eksploracją i eksploatacją oraz dobierania początkowej liczby k zostanie jeszcze omówiony w rozdziałach prezentujących wyniki poszukiwań liczby chromatycznej dla testowanych grafów.
 
 \subsection{Wyniki poszukiwań liczby chromatycznej}
-\textit{TODO: opisać czym są poszczególne rodziny grafów i jak przebiegały testy - ile iteracji, ile powtórzeń dla każdego grafu}
+Jak opisano w poprzednich rozdziałach, na potrzeby testów wykorzystano zbiór grafów przygotowanych dla konkursu DIMACS. Aby ocenić poprawność przygotowanej implementacji, dokonano porównania z wynikami klasycznych algorytmów (m.in. DSATUR i RLF) przedstawionymi w artykule \cite{article}.
+W artykule tym również wykorzystano grafy z konkursu DIMACS. Zbiór testowanych grafów został podzielony na kilka grup, różniących się charakterystykami :
+\begin{itemize}
+\item Grafy Mycielskiego i SGB - w tej grupie można znaleźć klasyczne grafy Mycielskiego oraz grafy ze Stanford GraphBase (SGB), reprezentujące m.in. połączenia między miastami w USA (grafy \textit{miles}) czy też relacje pomiędzy postaciami danej książki (grafy \textit{david}, \textit{jean}, \textit{anna}, \textit{homer}, \textit{huck}),
+\item grafy queens - grafy w których wierzchołki reprezentują pola szachownicy, natomiast krawędzie dodawane są tylko wtedy, gdy królowe postawione na polach odpowiadających wierzchołkom atakują się wzajemnie,
+\item grafy CAR - grafy inspirowane grafami Mycielskiego, jednak trudniejsze w kolorowaniu,
+\item grafy losowe i flat - trudne algorytmicznie grafy losowe stworzone przez Davida Johnsone'a, oraz grafy flat zaproponowane przez Culbersone'a,
+\item grafy RAC - reprezentują rzeczywisty problem alokacji zmiennych z kodu pośredniego do rejestrów procesora przez kompilator,
+\item grafy Leighton - każdy z nich składa się z 450 wierzchołków. Cechą charakterystyczną jest zmieniająca się liczba chromatyczna przy niezmiennej gęstości.
+\end{itemize}
 
+Dla każdego grafu opisanego w artykule uruchamiano algorytm od 10 do 15 razy, z następującymi parametrami: 
+\begin{itemize}
+\item $c = 0.4V$
+\item $n = 0.5V$
+\item $t = 7$
+\item \begin{equation}
+    i =
+    \begin{cases}
+      250 000, & \vert V \vert < 500 \\
+      500 000,& \vert V \vert >= 500
+    \end{cases}
+  \end{equation}
+\end{itemize}
+Następujące tabele prezentują najlepsze uzyskane wyniki, porównane z rzeczywistą liczbą chromatyczną oraz wynikami algorytmów opisanymi w artykule.
 
 \begin{figure} [H]
 \begin{tabular}{|c|c|c|c|c|c|}%
@@ -317,7 +353,30 @@ Na rysunkach \ref{fig:n1} oraz \ref{fig:n2} przedstawiono badanie rozmiaru sąsi
 \end{figure}  
 
 \subsection{Wnioski}
-\textit{TODO: opisać wnioski z eksperymentów}
+Jak wynika z analizy wyników, algorytm uzyskał bardzo dobre wyniki dla szerokiej gamy grafów. W większości przypadków był on w stanie znaleźć rzeczywistą liczbę chromatyczną lub liczbę bardzo jej bliską. Możemy to zaobserwować w przypadku grafów \textit{queens, rac, car} a także grafów Mycielskiego i SGB.
+
+Największe rozbieżności można zaobserwować w grupie grafów losowych. Grafy te wykazują szczególną trudność, jednakże i w tym przypadku przeszukiwanie z tabu okazało się lepsze od klasycznych algorytmów takich jak DSATUR czy RLF. Wyjątkiem może tu być graf R250.5, w którym uzyskany wynik jest gorszy od wyników zaprezentowanych w artykule.
+
+Nieco słabsze wyniki można zaobserwować również w przypadku grafów Leightona. Należy jednak pamiętać, że parametry algorytmu nie były dostosowane pod konkretny graf. Analiza dwóch ostatnich grafów leigthona tj. \textit{le450\_5c} oraz \textit{le450\_5d} wykazała, że da się poprawić wynik algorytmu tak, by osiągnął rzeczywistą liczbę chromatyczną równą 5. Należało w tym celu zmniejszyć liczbę kolorów k do 5, podnieść rozmiar sąsiedztwa oraz liczbę iteracji.
+
+\subsubsection{Dobór parametrów}
+Analiza otrzymanych wyników wykazała, że choć przyjęte w testach wartości parametrów pozwalają na otrzymanie dość dobrego rezultatu, w wielu przypadkach można poprawić otrzymany wynik, uzyskując rzeczywistą liczbę chromatyczną. Wymaga to jednak manipulacji parametrami.
+
+Jednym z najważniejszych parametrów jest liczba kolorów. Wpływa ona bardzo mocno na balans pomiędzy eksploracją i eksploatacją przestrzeni rozwiązań. W początkowym stadium działania algorytmu liczba ta może być znaczna, jednak powinna się zmniejszać wraz z poprawą rozwiązania, aby wywierać większą presję na eksploatację przestrzeni wokół optimum. W przygotowanej implementacji jednak liczba ta pozostaje stała w trakcie działania algorytmu. Powoduje to, że wraz z poprawą liczby kolorów, coraz więcej klas pozostaje pustych. Zwiększa się więc prawdopodobieństwo wygenerowania w sąsiedztwie ruchu, który nigdy nie zostanie przyjęty, ponieważ będzie usiłował rozbić liczną klasę kolorowania.
+
+Z tego powodu warto, by początkowa liczba k nie odbiegała znacznie od rzeczywistej liczby chromatycznej. Zazwyczaj jednak nie dysponujemy dobrym oszacowaniem tej liczby. Możemy jednak użyć do tego samego algorytmu. Można wtedy wyróżnić 2 fazy: 
+\begin{itemize}
+\item Faza eksploracji - uruchamiamy algorytm rozpoczynając od liczby k równej liczbie wierzchołków. Ograniczamy znacznie sąsiedztwo i liczbę iteracji. Ponieważ funkcja oceny premiuje liczne klasy, algorytm bardzo szybko ograniczy liczbę kolorów. Po otrzymaniu wyniku bez konfliktów uruchamiamy algorytm na niewielką liczbę iteracji kolejny raz, przyjmując k równe otrzymanemu w poprzednim uruchomieniu. Postępujemy tak aż do pojawienia się kolorowania z konfliktami.
+\item Faza eksploatacji - uruchamiamy algorytm rozpoczynając od liczby k, która zawierała konflikty lub liczby nieznacznie większej. Zwiększamy znacznie rozmiar sąsiedztwa np. ponad $0.5 V$ oraz podnosimy liczbę iteracji.
+
+\end{itemize}
+
+\section{Errata do sprawozdania 2}
+Pseudokod przedstawiony w rozdziale \ref{ssec:pseudo} powinien być uzupełniony o \textit{kryterium aspiracji}. Ruch będący ruchem tabu powinien być wybrany jako najlepszy, jeżeli prowadzi do optymalizacji globalnego optimum. W rzeczywistej implementacji zostało to uwzględnione i wszystkie testy zostały wykonane z poprawnie zaimplementowanym kryterium aspiracji.
+
+W rozdziale \ref{ssec:eval} wspomniano o porównaniu czasu działania naszego algorytmu z wynikami przedstawionymi w artykule. Nie dokonaliśmy takiego porównania, ponieważ nie mieliśmy dostępu do implementacji algorytmów opisanych w artykule, a zatem niemożliwe było miarodajne porównanie czasu działania algorytmów. W naszych eksperymentach skupiliśmy się jedynie na porównaniu uzyskanych wartości liczby chromatycznej.
+
+
 
 
 \bibliography{sources}
