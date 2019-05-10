@@ -11,7 +11,11 @@
 \usepackage{breakurl}
 \usepackage{algorithm}
 \usepackage{algpseudocode}
-
+\usepackage{graphicx}
+\usepackage{subfig}
+\usepackage{csvsimple}
+\graphicspath{ {./resources/} }
+\pagenumbering{gobble}
 
 \author{Jakub Mazur, Maciej Purski}
 \title{Kolorowanie grafów za pomocą metod heurystycznych (SK16) - GIS sprawozdanie 2}
@@ -160,6 +164,125 @@ Ważnym elementem oceny rozwiązania jest zbadanie, jak zmienia się wartość f
 Najważniejszym kryterium ewaluacji rozwiązania dla konkretnego przypadku grafu \textit{G} będzie uzyskana liczba chromatyczna \textit{k}. Aby można było w sposób miarodajny określić efektywność implementacji, należy przetestować algorytm na wielu różnorodnych przypadkach grafów. W tym celu zostaną wykorzystane standardowe grafy wykorzystywane w wielu artykułach traktujących o tematyce kolorowania grafów. Doskonały przegląd tych grafów, a także wyników uzyskanych przez najlepsze algorytmy można znaleźć w \cite{article}.
 
 Dla potrzeb ewaluacji rozwiązania algorytm zostanie uruchomiony na przypadkach grafów opisanych we wspomnianym artykule. Uzyskana liczba chromatyczna oraz czas działania i liczba iteracji programu zostaną porównane z wynikami przedstawionymi w artykule.
+
+\section{Eksperymenty}
+Zostały przeprowadzone dwie fazy eksperymentów: badanie parametrów oraz poszukiwanie najlepszych rozwiązań - jako najlepsze uznajemy rozwiązanie o jak najniższej liczbie chromatycznej bez konfliktów. TODO
+
+\subsection{Badanie parametrów}
+Badaniom podlegało zachowanie algorytmu względem rozmiaru sąsiedztwa oraz rozmiaru listy tabu. TODO
+
+\subsubsection{Rozmiar sąsiedztwa}
+Na rysunkach \ref{fig:n1} oraz \ref{fig:n2} przedstawiono badanie rozmiaru sąsiedztwa. \textit{TODO: Tutaj coś o tym, jak to badaliśmy. Wnioski będą pod badaniami}
+
+\begin{figure} [H]
+
+\begin{tabular}{cc}
+\subfloat{\includegraphics[width = 2.8in]{1-FullIns3}} &
+\subfloat{\includegraphics[width = 2.8in]{1-FullIns4}} \\
+\subfloat{\includegraphics[width = 2.8in]{1-FullIns5}} &
+\subfloat{\includegraphics[width = 2.8in]{DSJR500}} \\
+\subfloat{\includegraphics[width = 2.8in]{flat300}} &
+\subfloat{\includegraphics[width = 2.8in]{fpsol2}} \\
+\subfloat{\includegraphics[width = 2.8in]{games120}} &
+\subfloat{\includegraphics[width = 2.8in]{homer}} \\
+\end{tabular}
+\label{fig:n1}
+\caption{Badanie rozmiaru sąsiedztwa}
+\end{figure}
+
+\begin{figure}  [H]
+\begin{tabular}{cc}
+
+\subfloat{\includegraphics[width = 2.8in]{le450}} &
+\subfloat{\includegraphics[width = 2.8in]{miles500}} \\
+\subfloat{\includegraphics[width = 2.8in]{mulsol}} &
+\subfloat{\includegraphics[width = 2.8in]{myciel7}} \\
+\subfloat{\includegraphics[width = 2.8in]{queen13}} &
+\subfloat{\includegraphics[width = 2.8in]{queen16}} \\
+\subfloat{\includegraphics[width = 2.8in]{queen5}} &
+\subfloat{\includegraphics[width = 2.8in]{queen6}} \\
+
+\end{tabular}
+\label{n2}
+\caption{Badanie rozmiaru sąsiedztwa c.d.}
+\end{figure}
+
+\textit{TODO: Wnioski z badania rozmiaru sąsiedztwa}
+
+\subsubsection{Badanie rozmiaru listy tabu}
+\textit{TODO: wykres z badania rozmiaru listy tabu}
+\subsubsection{Początkowa liczba kolorów}
+\textit{TODO: Tutaj te spostrzeżenia o początkowej liczbie kolorów, można coś napisać o tej eksploracji i eksploatacji}
+
+\subsection{Wyniki poszukiwań liczby chromatycznej}
+\textit{TODO: opisać czym są poszczególne rodziny grafów}
+
+
+\begin{figure} [H]
+\begin{tabular}{|c|c|c|c|c|c|}%
+	\hline
+    \bfseries Graph & V & E & Faktyczne $\chi$ & Najlepsze $\chi$ z artykułu & \bfseries Tabu $\chi$
+    \csvreader[head to column names]{resources/queensResults.csv}{}% use head of csv as column names
+    {\\\hline \Graph & \V & \E & \Chrom & \ArticleBest & \bfseries\TabuBest}% specify your coloumns here
+    \\ \hline
+\end{tabular}
+\caption{Pomiary dla grafów typu queens}
+\end{figure}
+
+\begin{figure} [H]
+\begin{tabular}{|c|c|c|c|c|c|}%
+	\hline
+    \bfseries Graph & V & E & Faktyczne $\chi$ & Najlepsze $\chi$ z artykułu & \bfseries Tabu $\chi$
+    \csvreader[head to column names]{resources/leightonResults.csv}{}% use head of csv as column names
+    {\\\hline \graph & \v & \e & \chrom & \art & \bfseries\tabu}% specify your coloumns here
+    \\ \hline
+\end{tabular}
+\caption{Pomiary dla grafów Leightona}
+\end{figure}
+
+\begin{figure} [H]
+\begin{tabular}{|c|c|c|c|c|c|}%
+	\hline
+    \bfseries Graph & V & E & Faktyczne $\chi$ & Najlepsze $\chi$ z artykułu & \bfseries Tabu $\chi$
+    \csvreader[head to column names]{resources/mycielResults.csv}{}% use head of csv as column names
+    {\\\hline \graph & \v & \e & \chrom & \art & \bfseries\tabu}% specify your coloumns here
+    \\ \hline
+\end{tabular}
+\caption{Pomiary dla grafów Mycielskiego}
+\end{figure}
+
+\begin{figure} [H]
+\begin{tabular}{|c|c|c|c|c|c|}%
+	\hline
+    \bfseries Graph & V & E & Faktyczne $\chi$ & Najlepsze $\chi$ z artykułu & \bfseries Tabu $\chi$
+    \csvreader[head to column names]{resources/racResults.csv}{}% use head of csv as column names
+    {\\\hline \graph & \v & \e & \chrom & \art & \bfseries\tabu}% specify your coloumns here
+    \\ \hline
+\end{tabular}
+\caption{Pomiary dla grafów rac}
+\end{figure}  
+    
+\begin{figure} [H]
+\begin{tabular}{|c|c|c|c|c|c|}%
+	\hline
+    \bfseries Graph & V & E & Faktyczne $\chi$ & Najlepsze $\chi$ z artykułu & \bfseries Tabu $\chi$
+    \csvreader[head to column names]{resources/randomResults.csv}{}% use head of csv as column names
+    {\\\hline \graph & \v & \e & \chrom & \art & \bfseries\tabu}% specify your coloumns here
+    \\ \hline
+\end{tabular}
+\caption{Pomiary dla grafów losowych}
+\end{figure}  
+
+\begin{figure} [H]
+\begin{tabular}{|c|c|c|c|c|c|}%
+	\hline
+    \bfseries Graph & V & E & Faktyczne $\chi$ & Najlepsze $\chi$ z artykułu & \bfseries Tabu $\chi$
+    \csvreader[head to column names]{resources/carResults.csv}{}% use head of csv as column names
+    {\\\hline \graph & \v & \e & \chrom & \art & \bfseries\tabu}% specify your coloumns here
+    \\ \hline
+\end{tabular}
+\caption{Pomiary dla grafów car}
+\end{figure}  
 
 
 
