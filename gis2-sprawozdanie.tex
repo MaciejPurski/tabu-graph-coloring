@@ -211,6 +211,38 @@ Na rysunkach \ref{fig:n1} oraz \ref{fig:n2} przedstawiono badanie rozmiaru sąsi
 
 \subsubsection{Badanie rozmiaru listy tabu}
 \textit{TODO: wykres z badania rozmiaru listy tabu}
+
+\begin{figure}  [H]
+\begin{tabular}{cc}
+
+\subfloat{\includegraphics[width=2.8in]{tabu/flat300}} &
+\subfloat{\includegraphics[width=2.8in]{tabu/fpsol2}} \\
+\subfloat{\includegraphics[width=2.8in]{tabu/games120}} &
+\subfloat{\includegraphics[width=2.8in]{tabu/homer}} \\
+\subfloat{\includegraphics[width=2.8in]{tabu/le450}} &
+\subfloat{\includegraphics[width=2.8in]{tabu/miles500}} \\
+\subfloat{\includegraphics[width=2.8in]{tabu/mulsol}} &
+\subfloat{\includegraphics[width=2.8in]{tabu/myciel7}} \\
+
+\end{tabular}
+\label{fig:t1}
+\caption{Badanie rozmiaru tabu}
+\end{figure}
+
+\begin{figure}  [H]
+\begin{tabular}{cc}
+
+\subfloat{\includegraphics[width=2.8in]{tabu/queen13}} &
+\subfloat{\includegraphics[width=2.8in]{tabu/queen5}} \\
+\subfloat{\includegraphics[width=2.8in]{tabu/queen6}} & 
+\subfloat{\includegraphics[width=2.8in]{tabu/queen9}} \\
+
+\end{tabular}
+\label{fig:t1}
+\caption{Badanie rozmiaru tabu c.d.}
+\end{figure}
+
+
 \subsubsection{Początkowa liczba kolorów}
 \textit{TODO: Tutaj te spostrzeżenia o początkowej liczbie kolorów, można coś napisać o tej eksploracji i eksploatacji}
 
@@ -277,7 +309,7 @@ Na rysunkach \ref{fig:n1} oraz \ref{fig:n2} przedstawiono badanie rozmiaru sąsi
 \begin{tabular}{|c|c|c|c|c|c|}%
 	\hline
     \bfseries Graph & V & E & Faktyczne $\chi$ & Najlepsze $\chi$ z artykułu & \bfseries Tabu $\chi$
-    \csvreader[head to column names]{resources/carResults.csv}{}% use head of csv as column names
+    \csvreader[head to column names]{resources/car.csv}{}% use head of csv as column names
     {\\\hline \graph & \v & \e & \chrom & \art & \bfseries\tabu}% specify your coloumns here
     \\ \hline
 \end{tabular}
