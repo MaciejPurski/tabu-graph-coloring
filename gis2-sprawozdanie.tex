@@ -210,7 +210,7 @@ Na rysunkach \ref{fig:n1} oraz \ref{fig:n2} przedstawiono badanie rozmiaru sąsi
 \textit{TODO: Wnioski z badania rozmiaru sąsiedztwa}
 
 \subsubsection{Badanie rozmiaru listy tabu}
-\textit{TODO: wykres z badania rozmiaru listy tabu}
+\textit{TODO: Opis, na czym polegały badania, ile powtórzeń, zmienność parametrów itp}
 
 \begin{figure}  [H]
 \begin{tabular}{cc}
@@ -242,18 +242,18 @@ Na rysunkach \ref{fig:n1} oraz \ref{fig:n2} przedstawiono badanie rozmiaru sąsi
 \caption{Badanie rozmiaru tabu c.d.}
 \end{figure}
 
-
+\textit{TODO wnioski}
 \subsubsection{Początkowa liczba kolorów}
 \textit{TODO: Tutaj te spostrzeżenia o początkowej liczbie kolorów, można coś napisać o tej eksploracji i eksploatacji}
 
 \subsection{Wyniki poszukiwań liczby chromatycznej}
-\textit{TODO: opisać czym są poszczególne rodziny grafów}
+\textit{TODO: opisać czym są poszczególne rodziny grafów i jak przebiegały testy - ile iteracji, ile powtórzeń dla każdego grafu}
 
 
 \begin{figure} [H]
 \begin{tabular}{|c|c|c|c|c|c|}%
 	\hline
-    \bfseries Graph & V & E & Faktyczne $\chi$ & Najlepsze $\chi$ z artykułu & \bfseries Tabu $\chi$
+    \bfseries Graf & V & E & Faktyczne $\chi$ & Najlepsze $\chi$ z artykułu & \bfseries Tabu $\chi$
     \csvreader[head to column names]{resources/queensResults.csv}{}% use head of csv as column names
     {\\\hline \Graph & \V & \E & \Chrom & \ArticleBest & \bfseries\TabuBest}% specify your coloumns here
     \\ \hline
@@ -264,7 +264,7 @@ Na rysunkach \ref{fig:n1} oraz \ref{fig:n2} przedstawiono badanie rozmiaru sąsi
 \begin{figure} [H]
 \begin{tabular}{|c|c|c|c|c|c|}%
 	\hline
-    \bfseries Graph & V & E & Faktyczne $\chi$ & Najlepsze $\chi$ z artykułu & \bfseries Tabu $\chi$
+    \bfseries Graf & V & E & Faktyczne $\chi$ & Najlepsze $\chi$ z artykułu & \bfseries Tabu $\chi$
     \csvreader[head to column names]{resources/leightonResults.csv}{}% use head of csv as column names
     {\\\hline \graph & \v & \e & \chrom & \art & \bfseries\tabu}% specify your coloumns here
     \\ \hline
@@ -275,7 +275,7 @@ Na rysunkach \ref{fig:n1} oraz \ref{fig:n2} przedstawiono badanie rozmiaru sąsi
 \begin{figure} [H]
 \begin{tabular}{|c|c|c|c|c|c|}%
 	\hline
-    \bfseries Graph & V & E & Faktyczne $\chi$ & Najlepsze $\chi$ z artykułu & \bfseries Tabu $\chi$
+    \bfseries Graf & V & E & Faktyczne $\chi$ & Najlepsze $\chi$ z artykułu & \bfseries Tabu $\chi$
     \csvreader[head to column names]{resources/mycielResults.csv}{}% use head of csv as column names
     {\\\hline \graph & \v & \e & \chrom & \art & \bfseries\tabu}% specify your coloumns here
     \\ \hline
@@ -286,7 +286,7 @@ Na rysunkach \ref{fig:n1} oraz \ref{fig:n2} przedstawiono badanie rozmiaru sąsi
 \begin{figure} [H]
 \begin{tabular}{|c|c|c|c|c|c|}%
 	\hline
-    \bfseries Graph & V & E & Faktyczne $\chi$ & Najlepsze $\chi$ z artykułu & \bfseries Tabu $\chi$
+    \bfseries Graf & V & E & Faktyczne $\chi$ & Najlepsze $\chi$ z artykułu & \bfseries Tabu $\chi$
     \csvreader[head to column names]{resources/racResults.csv}{}% use head of csv as column names
     {\\\hline \graph & \v & \e & \chrom & \art & \bfseries\tabu}% specify your coloumns here
     \\ \hline
@@ -297,7 +297,7 @@ Na rysunkach \ref{fig:n1} oraz \ref{fig:n2} przedstawiono badanie rozmiaru sąsi
 \begin{figure} [H]
 \begin{tabular}{|c|c|c|c|c|c|}%
 	\hline
-    \bfseries Graph & V & E & Faktyczne $\chi$ & Najlepsze $\chi$ z artykułu & \bfseries Tabu $\chi$
+    \bfseries Graf & V & E & Faktyczne $\chi$ & Najlepsze $\chi$ z artykułu & \bfseries Tabu $\chi$
     \csvreader[head to column names]{resources/randomResults.csv}{}% use head of csv as column names
     {\\\hline \graph & \v & \e & \chrom & \art & \bfseries\tabu}% specify your coloumns here
     \\ \hline
@@ -308,7 +308,7 @@ Na rysunkach \ref{fig:n1} oraz \ref{fig:n2} przedstawiono badanie rozmiaru sąsi
 \begin{figure} [H]
 \begin{tabular}{|c|c|c|c|c|c|}%
 	\hline
-    \bfseries Graph & V & E & Faktyczne $\chi$ & Najlepsze $\chi$ z artykułu & \bfseries Tabu $\chi$
+    \bfseries Graf & V & E & Faktyczne $\chi$ & Najlepsze $\chi$ z artykułu & \bfseries Tabu $\chi$
     \csvreader[head to column names]{resources/car.csv}{}% use head of csv as column names
     {\\\hline \graph & \v & \e & \chrom & \art & \bfseries\tabu}% specify your coloumns here
     \\ \hline
@@ -316,6 +316,8 @@ Na rysunkach \ref{fig:n1} oraz \ref{fig:n2} przedstawiono badanie rozmiaru sąsi
 \caption{Pomiary dla grafów car}
 \end{figure}  
 
+\subsection{Wnioski}
+\textit{TODO: opisać wnioski z eksperymentów}
 
 
 \bibliography{sources}
