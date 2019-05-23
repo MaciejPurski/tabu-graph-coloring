@@ -168,13 +168,34 @@ Najważniejszym kryterium ewaluacji rozwiązania dla konkretnego przypadku grafu
 Dla potrzeb ewaluacji rozwiązania algorytm zostanie uruchomiony na przypadkach grafów opisanych we wspomnianym artykule. Uzyskana liczba chromatyczna oraz czas działania i liczba iteracji programu zostaną porównane z wynikami przedstawionymi w artykule.
 
 \section{Eksperymenty}
-Zostały przeprowadzone dwie fazy eksperymentów: badanie parametrów oraz poszukiwanie najlepszych rozwiązań - jako najlepsze uznajemy rozwiązanie o jak najniższej liczbie chromatycznej bez konfliktów. Eksperymenty polegały na wielokrotnym uruchamianiu algorytmu dla różnych rodzajów grafów, przy kilku zestawach parametrów startowych. Podczas eksperymentów wykorzystano zestaw grafów stworzonych na potrzeby konkursu \textit{The Second DIMACS Implementation Challenge}\cite{Johnson}. Dotyczył on implementacji algorytmów rozwiązujących problemy NP-trudne na grafach, m.in. problem kolorowania wierzchołków. Powstały dla celów konkursu zbiór problemów obejmuje grafy o różnej budowie, dlatego świetnie nadaje się do przetestowania przygotowanej implementacji. 
+Zostały przeprowadzone dwie fazy eksperymentów: badanie parametrów oraz poszukiwanie najlepszych rozwiązań - jako najlepsze uznajemy rozwiązanie o jak najniższej liczbie chromatycznej bez konfliktów. Eksperymenty polegały na wielokrotnym uruchamianiu algorytmu dla różnych rodzajów grafów, przy kilku zestawach parametrów startowych. Podczas eksperymentów wykorzystano zestaw grafów stworzonych na potrzeby konkursu \textit{The Second DIMACS Implementation Challenge}\cite{Johnson}. Dotyczył on implementacji algorytmów rozwiązujących problemy NP-trudne na grafach, m.in. problem kolorowania wierzchołków. Powstały dla celów konkursu zbiór problemów obejmuje grafy o różnej budowie, dlatego świetnie nadaje się do przetestowania przygotowanej implementacji.
+
+\subsection{Zmienność funkcji kosztu}
+
+Na rysunku (1) widoczna jest zmienność kosztu aktualnie najlepszego kolorowania. Poziomą żółtą linią oznaczono na wykresach wartość minimalną uzyskaną przez algorytm. Dla grafów większych zbieżność jest znacznie wolniejsza (widoczne na trzech pierwszych wykresach). Na dwóch ostatnich wykresach widoczna jest \textit{skokowość} zmian wartości funkcji kosztu.
+
+
+\begin{figure} [H]
+
+\begin{tabular}{cc}
+\subfloat{\includegraphics[width = 2.8in]{Release/4full5}} &
+\subfloat{\includegraphics[width = 2.8in]{Release/homer}} \\
+\subfloat{\includegraphics[width = 2.8in]{Release/inithx1}} &
+\subfloat{\includegraphics[width = 2.8in]{Release/le450}} \\
+\subfloat{\includegraphics[width = 2.8in]{Release/queen}} &
+\subfloat{\includegraphics[width = 2.8in]{Release/r250}} \\
+
+
+\end{tabular}
+
+\caption{Badanie zmienności funkcji kosztu na różnych grafach}
+\end{figure}
 
 \subsection{Badanie parametrów}
 Badaniom podlegało zachowanie algorytmu względem rozmiaru sąsiedztwa oraz rozmiaru listy tabu. Celem badania było sprawdzenie, czy rozmiar sąsiedztwa i długość listy tabu zależą silnie od charakterystyki konkretnego grafu. Poszukiwany był taki zestaw parametrów, który byłby na tyle ogólny, by dało się go zastosować do dowolnego grafu, którego charakterystyka nie jest znana. 
 
 \subsubsection{Rozmiar sąsiedztwa}
-Na rysunkach  oraz  przedstawiono badanie rozmiaru sąsiedztwa. Aby sprawdzić, jak rozmiar sąsiedztwa wpływa na działanie algorytmu, z różnych rodzin grafów wybrano po kilku przedstawicieli. Rozmiar sąsiedztwa był wyznaczany jako iloczyn liczby wierzchołków i pewnego współczynnika. Wartości tego współczynnika zmieniały się w zakresie $<0.1, 1.0>$, z krokiem równym $0.1$. Na każdy współczynnik przyjęto 10 lub 6 uruchomień algorytmu. Otrzymywana liczba kolorów była zapisywana do logu, by następnie wyznaczyć minimalną, maksymalną i średnią liczbę kolorów uzyskaną przy danym współczynniku. Długość listy tabu pozostawała niezmienna, natomiast początkowa liczba kolorów stanowiła około $0.4$ liczby wierzchołków.
+Na rysunkach (2) oraz (3) przedstawiono badanie rozmiaru sąsiedztwa. Aby sprawdzić, jak rozmiar sąsiedztwa wpływa na działanie algorytmu, z różnych rodzin grafów wybrano po kilku przedstawicieli. Rozmiar sąsiedztwa był wyznaczany jako iloczyn liczby wierzchołków i pewnego współczynnika. Wartości tego współczynnika zmieniały się w zakresie $<0.1, 1.0>$, z krokiem równym $0.1$. Na każdy współczynnik przyjęto 10 lub 6 uruchomień algorytmu. Otrzymywana liczba kolorów była zapisywana do logu, by następnie wyznaczyć minimalną, maksymalną i średnią liczbę kolorów uzyskaną przy danym współczynniku. Długość listy tabu pozostawała niezmienna, natomiast początkowa liczba kolorów stanowiła około $0.4$ liczby wierzchołków.
 
 \begin{figure} [H]
 
@@ -217,7 +238,7 @@ Na podstawie wyników eksperymentu, w trakcie wykonywania poszukiwań liczby chr
 Warto również wspomnieć, że rozmiar sąsiedztwa bardzo silnie wpływa na czas wykonania programu. Z tego właśnie powodu, rozpoczynanie poszukiwań z dużym sąsiedztwem może okazać się nieopłacalne.
 
 \subsubsection{Badanie rozmiaru listy tabu}
-Badanie wpływu rozmiaru listy tabu przebiegało analogicznie do badania rozmiaru sąsiedztwa. Podobnie jak poprzednio, dla różnych rodzajów grafów uruchamiano algorytm z kilkoma długościami listy tabu. Długości te pochodziły ze zbioru $\lbrace7,10,20,40,100\rbrace$. Dla każdej długości tabu uruchomiono algorytm 5 razy, za każdym razem logując zwracaną liczbę kolorów. Wyniki w postaci minimalnej, maksymalnej i średniej liczby kolorów zaprezentowano na wykresach. Pozostałe parametry, tj. początkowa liczba kolorów i rozmiar sąsiedztwa ustalono odpowiednio na $0.4V$ i $0.5V$.
+Badanie wpływu rozmiaru listy tabu przebiegało analogicznie do badania rozmiaru sąsiedztwa. Podobnie jak poprzednio, dla różnych rodzajów grafów uruchamiano algorytm z kilkoma długościami listy tabu. Długości te pochodziły ze zbioru $\lbrace7,10,20,40,100\rbrace$. Dla każdej długości tabu uruchomiono algorytm 5 razy, za każdym razem logując zwracaną liczbę kolorów. Wyniki w postaci minimalnej, maksymalnej i średniej liczby kolorów zaprezentowano na wykresach widocznych na rysunkach (4) oraz (5). Pozostałe parametry, tj. początkowa liczba kolorów i rozmiar sąsiedztwa ustalono odpowiednio na $0.4V$ i $0.5V$.
 
 \begin{figure}  [H]
 \begin{tabular}{cc}

@@ -108,8 +108,12 @@ unsigned int ColorClass::getVertex(unsigned int index) const
 {
     auto it = vertices.begin();
 
-    for (int i = 0; i < index; i++)
+    for (int i = 0; i < index; i++) {
+        if (it == vertices.end())
+            throw std::runtime_error("Index out of bounds");
         it++;
+    }
+
 
     return *it;
 }
@@ -121,6 +125,13 @@ void ColorClass::performMove(ColorClass &from, ColorClass &to, unsigned int v)
 
     int fromCostChange = from.costChangeAfterRemovalConflicts(fromConflictsChange);
     int toCostChange = to.costChangeAfterAddingConflicts(toConflictsChange);
+
+    auto it = std::find(from.vertices.begin(),
+                        from.vertices.end(), v);
+
+    if (it == from.vertices.end())
+        throw std::runtime_error("There is no such vertex!");
+
 
     from.vertices.remove(v);
     to.vertices.push_back(v);
